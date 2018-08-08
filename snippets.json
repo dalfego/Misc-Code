@@ -1,0 +1,184 @@
+{
+    "snippets" : [
+        {
+            "name" : "Basic Imports",
+            "code" : [
+              "import math",
+              "import numpy as np",
+              "import pandas as pd",
+              "import seaborn as sns",
+              "import matplotlib.pyplot as plt",
+              "import matplotlib.dates as mdates",
+              "%matplotlib inline",
+              "from datetime import datetime",
+              "import warnings",
+              "import time",
+              "from scipy import stats",
+              "import itertools",
+              "warnings.filterwarnings('ignore')",
+              "import xlwings as xw",
+              "import plotly",
+              "from plotly import tools",
+              "import cufflinks as cf",
+              "cf.set_config_file(offline=True, world_readable=True, theme='ggplot')",
+              "import plotly.graph_objs as go",
+              "plotly.offline.init_notebook_mode(connected=True)"
+            ]
+        },
+
+        {
+          "name" : "Hide Code Button - Raw Cell",
+          "code" : [
+            "<script>",
+            " function code_toggle(){",
+            "   if (code_shown){",
+            "     $('div.input').hide('500');",
+            "     $('#toggleButton').val('Show Code')",
+            "   } else {",
+            "     $('div.input').show('500');",
+            "     $('#toggleButton').val('Hide Code')",
+            "   }",
+            "   code_shown = !code_shown",
+            " }",
+            "",
+            " $( document ).ready(function(){",
+            "   code_shown=false;",
+            "   $('div.input').hide()",
+            " });",
+            "</script>",
+            "<form action="javascript:code_toggle()"><input type="submit" id="toggleButton" value="Show Code"></form>"
+          ]
+        }
+
+        {
+          "name" : "LogReg Imports",
+          "code" : [
+            "from sklearn.linear_model import LogisticRegression",
+            "from sklearn import metrics",
+            "from sklearn.preprocessing import MinMaxScaler",
+            "from sklearn.cross_validation import train_test_split",
+            "from sklearn.model_selection import GridSearchCV",
+            "from sklearn.metrics import classification_report",
+            "from sklearn.metrics import confusion_matrix",
+            "from sklearn import model_selection",
+            "from sklearn.model_selection import cross_val_score",
+            "from sklearn.metrics import roc_auc_score",
+            "from sklearn.metrics import roc_curve"
+          ]
+        },
+
+        {
+          "name" : "LogReg Grid Search",
+          "code" : [
+            "def logreg_gridsearch(X_TRAIN, Y_TRAIN):",
+            " # Create regularization penalty space",
+            " penalty = ['l1', 'l2']",
+            "",
+            " # Create regularization hyperparameter space",
+            " C = np.logspace(0, 4, 100)",
+            "",
+            " # Create hyperparameter options",
+            " hyperparameters = dict(C=C, penalty=penalty)",
+            "",
+            " grid = GridSearchCV(LogisticRegression(), hyperparameters, cv=10, verbose=0)",
+            " best_model = grid.fit(X_TRAIN,Y_TRAIN)",
+            " # View best hyperparameters",
+            " print('Best Penalty:', best_model.best_estimator_.get_params()['penalty'])",
+            " print('Best C:', best_model.best_estimator_.get_params()['C'])"
+          ]
+        },
+
+        {
+          "name" : "Model Accuracy",
+          "code" : [
+            "def model_accuracy(TRAINED_MODEL, X_TEST, Y_TEST, name):",
+            " y_pred = TRAINED_MODEL.predict(X_TEST)",
+            " print('Accuracy of {} on test set: {:.2f}'.format(name, TRAINED_MODEL.score(X_TEST, Y_TEST)))"
+          ]
+        },
+
+        {
+          "name" : "Classification Report",
+          "code" : [
+            "def clf_report(TRAINED_MODEL, X_TEST, Y_TEST):",
+            " y_pred = TRAINED_MODEL.predict(X_TEST)",
+            " print(classification_report(Y_TEST, y_pred))"
+          ]
+        },
+
+        {
+          "name" : "Confusion Matrix",
+          "code" : [
+            "def confusion_mtx(TRAINED_MODEL, X_TEST, Y_TEST):",
+            " y_pred = TRAINED_MODEL.predict(X_TEST)",
+            " conf_matrix = confusion_matrix(Y_TEST, y_pred)",
+            " plt.clf()",
+            " plt.imshow(conf_matrix, interpolation='nearest', cmap=plt.cm.Wistia)",
+            " classNames = ['Negative','Positive']",
+            " plt.title('Confusion Matrix - Test Data')",
+            " plt.ylabel('True label')",
+            " plt.xlabel('Predicted label')",
+            " tick_marks = np.arange(len(classNames))",
+            " plt.xticks(tick_marks, classNames, rotation=45)",
+            " plt.yticks(tick_marks, classNames)",
+            " s = [['TN','FP'], ['FN', 'TP']]",
+            " for i in range(2):",
+            "   for j in range(2):",
+            "     plt.text(j,i, str(s[i][j])+' = '+str(conf_matrix[i][j]))",
+            " plt.show()"
+          ]
+        },
+
+        {
+          "name" : "LogReg CV",
+          "code" : [
+            "def logreg_kfold_CV(k, C, PENALTY, RANDOMSTATE, X_TRAIN, Y_TRAIN):",
+            " kfold = model_selection.KFold(n_splits=k, random_state=RANDOMSTATE)",
+            " modelCV = LogisticRegression(C=C, penalty=PENALTY)",
+            " scoring = 'accuracy'",
+            " results = model_selection.cross_val_score(modelCV, X_TRAIN, Y_TRAIN, cv=kfold, scoring=scoring)",
+            " print('10-fold cross validation average accuracy: {} +/- {}'.format(round(results.mean(),2), round(results.std(),2)))"
+          ]
+        },
+
+        {
+          "name" : "ROC",
+          "code" : [
+            "def ROC(TRAINED_MODEL, X_TEST, Y_TEST):",
+            " logit_roc_auc = roc_auc_score(Y_TEST, TRAINED_MODEL.predict(X_TEST))",
+            " fpr, tpr, thresholds = roc_curve(Y_TEST, TRAINED_MODEL.predict_proba(X_TEST)[:,1])",
+            " plt.figure(figsize=(15,10))",
+            " plt.plot(fpr, tpr, label='Logistic Regression (AUC = %0.2f)' % logit_roc_auc)",
+            " plt.plot([0, 1], [0, 1],'r--')",
+            " plt.xlim([0.0, 1.0])",
+            " plt.ylim([0.0, 1.05])",
+            " plt.xlabel('False Positive Rate')",
+            " plt.ylabel('True Positive Rate')",
+            " plt.title('Receiver Operating Characteristic')",
+            " plt.legend(loc='lower right')",
+            " plt.show()"
+          ]
+        },
+
+        {
+          "name" : "Feature Importance",
+          "code" : [
+            "def feat_importance(TRAINED_MODEL):",
+            " feature_importance = abs(TRAINED_MODEL.coef_[0])",
+            " feature_importance = 100.0 * (feature_importance / feature_importance.max())",
+            " sorted_idx = np.argsort(feature_importance)",
+            " pos = np.arange(sorted_idx.shape[0]) + .5",
+            "",
+            " featfig = plt.figure(figsize=[15,15])",
+            " featax = featfig.add_subplot(1, 1, 1)",
+            " featax.barh(pos, feature_importance[sorted_idx], align='center')",
+            " featax.set_yticks(pos)",
+            " featax.set_yticklabels(np.array(x.columns)[sorted_idx], fontsize=16)",
+            " featax.set_xlabel('Relative Feature Importance')",
+            "",
+            " plt.tight_layout()",
+            " plt.show()"
+          ]
+        }
+    ]
+}
